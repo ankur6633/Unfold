@@ -3,7 +3,7 @@ import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import { sendOrderConfirmationEmail } from "./emailController.js";
 
-const ALLOWED_STATUSES = new Set(["Booked", "Pickup", "Washing", "Washed", "Delivered"]);
+const ALLOWED_STATUSES = new Set(["Booked", "Pickup", "Washing", "Washed", "Delivered", "Rejected"]);
 
 function parseQuantity(value) {
   const q = Number(value);
@@ -13,7 +13,15 @@ function parseQuantity(value) {
 
 export async function createOrder(req, res) {
   try {
-    const { userEmail, items, totalPrice } = req.body ?? {};
+    const { 
+      userEmail, 
+      items, 
+      totalPrice, 
+      pickupAddress, 
+      customerName, 
+      customerPhone, 
+      alternatePhone 
+    } = req.body ?? {};
     const userId = req.user?.userId;
 
     if (!userEmail || typeof userEmail !== "string") {
@@ -24,6 +32,10 @@ export async function createOrder(req, res) {
       return res.status(400).json({ message: "items must be a non-empty array." });
     }
 
+    if (!pickupAddress) {
+      return res.status(400).json({ message: "pickupAddress is required." });
+    }
+
     // items should now be an array of ServiceItemGroupSchema objects
     // The frontend sends the entire cart which matches the schema
     const order = await Order.create({
@@ -31,6 +43,14 @@ export async function createOrder(req, res) {
       userEmail: userEmail.trim(),
       items: items, 
       totalPrice,
+      pickupAddress,
+      customerName,
+      customerPhone,
+      alternatePhone,
+      pickupDate: req.body.pickupDate,
+      pickupTime: req.body.pickupTime,
+      deliveryDate: req.body.deliveryDate,
+      deliveryTime: req.body.deliveryTime,
       status: "Booked",
     });
 

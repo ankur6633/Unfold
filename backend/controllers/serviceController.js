@@ -119,3 +119,19 @@ export const deleteService = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// @desc    Delete an item master
+// @route   DELETE /api/services/admin/items/:id
+export const deleteItem = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const item = await Item.findByIdAndDelete(id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+    
+    // Also cleanup mappings
+    await ServiceItem.deleteMany({ itemId: id });
+    
+    res.json({ message: "Item deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

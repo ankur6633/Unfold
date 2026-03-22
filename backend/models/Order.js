@@ -24,11 +24,26 @@ const OrderSchema = new mongoose.Schema(
     userEmail: { type: String, required: true, trim: true, index: true },
     items: { type: [ServiceItemGroupSchema], default: [] },
     totalPrice: { type: Number, required: true, min: 0 },
+    pickupAddress: {
+      label: String,
+      line1: String,
+      line2: String,
+      city: String,
+      state: String,
+      pincode: String
+    },
+    customerName: { type: String },
+    customerPhone: { type: String },
+    alternatePhone: { type: String },
     status: {
       type: String,
       enum: ["Booked", "Pickup", "Washing", "Washed", "Delivered"],
       default: "Booked",
     },
+    pickupDate: { type: String },
+    pickupTime: { type: String },
+    deliveryDate: { type: String },
+    deliveryTime: { type: String },
   },
   { timestamps: true }
 );

@@ -65,25 +65,45 @@ export async function adminLogin(req, res) {
   }
 }
 
+import { sendOtpEmail } from "../utils/mailer.js";
+import Otp from "../models/Otp.js";
+import User from "../models/User.js";
+
 export async function sendOtp(req, res) {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email is required." });
+    if (!email) {
+      console.log("OTP Request Failed: No email provided");
+      return res.status(400).json({ message: "Email is required." });
+    }
 
+    console.log(`Step 1: Generating OTP for ${email}`);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Save OTP to DB
-    const { default: Otp } = await import("../models/Otp.js");
+    // 1. Instantly save OTP to DB (Primary Action)
+    console.log(`Step 2: Saving OTP to DB for ${email}`);
     await Otp.findOneAndUpdate({ email }, { otp, createdAt: new Date() }, { upsert: true });
+    console.log(`Step 3: OTP saved successfully for ${email}`);
 
-    // Send email
-    const { sendOtpEmail } = await import("../utils/mailer.js");
-    await sendOtpEmail(email, otp);
-
+    // 2. Respond to user IMMEDIATELY (Speed Optimization)
     res.status(200).json({ message: "OTP sent successfully." });
+
+    // 3. Fire email in background (Asynchronous)
+    console.log(`Step 4: Launching background email task for ${email}`);
+    sendOtpEmail(email, otp)
+      .then(() => {
+        console.log(`Step 5: Background email sent successfully to ${email}`);
+      })
+      .catch(err => {
+        console.error(`Step 5: Background OTP Email FAILURE for ${email}:`, err.message);
+        console.error("Full Error:", err);
+      });
+
   } catch (err) {
-    console.error("Send OTP Error:", err);
-    res.status(500).json({ message: "Failed to send OTP." });
+    console.error("Critical Send OTP Error:", err);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Failed to send OTP." });
+    }
   }
 }
 
@@ -149,9 +169,105 @@ export async function getProfile(req, res) {
     const user = await User.findById(req.user.userId);
     if (!user) return res.status(404).json({ message: "User not found." });
 
-    res.status(200).json({ email: user.email, role: user.role, cart: user.cart });
+    res.status(200).json({ 
+      email: user.email, 
+      fullName: user.fullName || "",
+      mobile: user.mobile || "",
+      altMobile: user.altMobile || "",
+      addresses: user.addresses || [],
+      role: user.role, 
+      cart: user.cart 
+    });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch profile." });
+  }
+}
+
+export async function updateProfile(req, res) {
+  try {
+    const { fullName, mobile, altMobile } = req.body;
+    const { default: User } = await import("../models/User.js");
+    
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      { fullName, mobile, altMobile },
+      { new: true }
+    );
+
+    res.status(200).json({ 
+      fullName: user.fullName, 
+      mobile: user.mobile, 
+      altMobile: user.altMobile 
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update profile." });
+  }
+}
+
+export async function addAddress(req, res) {
+  try {
+    const { label, line1, line2, city, state, pincode, isDefault } = req.body;
+    const { default: User } = await import("../models/User.js");
+    
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    // If this is the first address or marked as default, unset other defaults
+    if (isDefault || user.addresses.length === 0) {
+      user.addresses.forEach(addr => addr.isDefault = false);
+    }
+
+    user.addresses.push({ 
+      label, 
+      line1, 
+      line2, 
+      city, 
+      state, 
+      pincode, 
+      isDefault: isDefault || user.addresses.length === 0 
+    });
+    
+    await user.save();
+    res.status(200).json({ addresses: user.addresses });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add address." });
+  }
+}
+
+export async function deleteAddress(req, res) {
+  try {
+    const { addressId } = req.params;
+    const { default: User } = await import("../models/User.js");
+    
+    const user = await User.findById(req.user.userId);
+    user.addresses = user.addresses.filter(addr => addr._id.toString() !== addressId);
+    
+    // If we deleted the default address, make the first one default
+    if (user.addresses.length > 0 && !user.addresses.some(a => a.isDefault)) {
+      user.addresses[0].isDefault = true;
+    }
+
+    await user.save();
+    res.status(200).json({ addresses: user.addresses });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete address." });
+  }
+}
+
+export async function setDefaultAddress(req, res) {
+  try {
+    const { addressId } = req.params;
+    const { default: User } = await import("../models/User.js");
+    
+    const user = await User.findById(req.user.userId);
+    user.addresses.forEach(addr => {
+      addr.isDefault = addr._id.toString() === addressId;
+    });
+
+    await user.save();
+    res.status(200).json({ addresses: user.addresses });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to set default address." });
   }
 }
 

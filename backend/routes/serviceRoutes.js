@@ -7,7 +7,8 @@ import {
   createItem, 
   mapServiceItem,
   getItems,
-  getMappings
+  getMappings,
+  deleteItem
 } from "../controllers/serviceController.js";
 import { verifyJwt, adminOnly } from "../middleware/authMiddleware.js";
 
@@ -24,5 +25,7 @@ router.put("/admin/services/:id", verifyJwt, adminOnly, updateService);
 router.delete("/admin/services/:id", verifyJwt, adminOnly, deleteService);
 router.post("/admin/items", verifyJwt, adminOnly, createItem);
 router.post("/admin/service-items", verifyJwt, adminOnly, mapServiceItem);
+
+router.delete("/admin/items/:id", verifyJwt, adminOnly, deleteItem);
 
 export default router;
