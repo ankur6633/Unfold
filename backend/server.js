@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
-import productRoutes from './routes/productRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 
 dotenv.config();
@@ -15,7 +15,7 @@ app.use(cors());
 
 // Connect routes
 app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
+app.use('/api/services', serviceRoutes);
 app.use('/api/orders', orderRoutes);
 
 // Test route

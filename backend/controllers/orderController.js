@@ -13,7 +13,7 @@ function parseQuantity(value) {
 
 export async function createOrder(req, res) {
   try {
-    const { userEmail, items } = req.body ?? {};
+    const { userEmail, items, totalPrice } = req.body ?? {};
     const userId = req.user?.userId;
 
     if (!userEmail || typeof userEmail !== "string") {
@@ -24,48 +24,12 @@ export async function createOrder(req, res) {
       return res.status(400).json({ message: "items must be a non-empty array." });
     }
 
-    // ... (rest of logic) ...
-    const normalizedItems = items.map((it) => ({
-      productId: it?.productId ?? it?.id ?? it?._id,
-      quantity: parseQuantity(it?.quantity ?? 1),
-    }));
-
-    const productIds = normalizedItems.map((it) => String(it.productId));
-    for (const id of productIds) {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid product id." });
-      }
-    }
-    const uniqueProductIds = [...new Set(productIds)];
-
-    const products = await Product.find({ _id: { $in: uniqueProductIds } });
-    const productById = new Map(products.map((p) => [String(p._id), p]));
-
-    for (const item of normalizedItems) {
-      if (!productById.get(String(item.productId))) {
-        return res.status(400).json({ message: "Invalid product in items." });
-      }
-    }
-
-    const orderItems = normalizedItems.map((item) => {
-      const product = productById.get(String(item.productId));
-      return {
-        productId: product._id,
-        name: product.name,
-        price: product.price,
-        quantity: item.quantity,
-      };
-    });
-
-    const totalPrice = orderItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-
+    // items should now be an array of ServiceItemGroupSchema objects
+    // The frontend sends the entire cart which matches the schema
     const order = await Order.create({
       userId,
       userEmail: userEmail.trim(),
-      items: orderItems,
+      items: items, 
       totalPrice,
       status: "Booked",
     });
