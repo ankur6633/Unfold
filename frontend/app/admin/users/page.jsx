@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/services/api";
 import Link from "next/link";
 import axios from "axios";
 import { getAdminToken } from "@/lib/auth";
@@ -31,7 +32,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     try {
       const token = getAdminToken();
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.get(`${apiUrl}/api/admin/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -47,7 +48,7 @@ export default function AdminUsersPage() {
     setOrdersLoading(true);
     try {
       const token = getAdminToken();
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.get(`${apiUrl}/api/admin/users/${email}/orders`, {
         headers: { Authorization: `Bearer ${token}` }
       });

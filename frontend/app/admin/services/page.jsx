@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
+import { getAdminToken } from "@/lib/auth";
 
 export default function ServiceMaster() {
   const [services, setServices] = useState([]);
@@ -12,7 +14,7 @@ export default function ServiceMaster() {
 
   const fetchServices = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.get(`${apiUrl}/api/services`);
       setServices(res.data);
     } catch (err) {
@@ -30,7 +32,7 @@ export default function ServiceMaster() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("admin_token");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       
       if (editingId) {
         await axios.put(`${apiUrl}/api/services/admin/services/${editingId}`, formData, {
@@ -68,7 +70,7 @@ export default function ServiceMaster() {
     if (!confirm("Are you sure you want to delete this service?")) return;
     try {
       const token = localStorage.getItem("admin_token");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       await axios.delete(`${apiUrl}/api/services/admin/services/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });

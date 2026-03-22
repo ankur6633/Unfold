@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
+import { getAdminToken } from "@/lib/auth";
 
 export default function MappingMaster() {
   const [services, setServices] = useState([]);
@@ -11,7 +13,7 @@ export default function MappingMaster() {
 
   const fetchData = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const token = localStorage.getItem("admin_token");
       
       const [sRes, iRes, mRes] = await Promise.all([
@@ -39,7 +41,7 @@ export default function MappingMaster() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("admin_token");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       await axios.post(`${apiUrl}/api/services/admin/service-items`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });

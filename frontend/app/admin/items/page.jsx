@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
+import { getAdminToken } from "@/lib/auth";
 
 export default function ItemMaster() {
   const [items, setItems] = useState([]);
   const [formData, setFormData] = useState({ name: "", unitType: "piece" });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = true;
 
   const fetchItems = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       // We don't have a public GET /items yet, so we'll use a hack or implement it.
       // For now, let's assume we can fetch them via services or implement a new route.
       // I'll implement a simple GET /api/services/admin/items route in the controller next.
@@ -34,7 +36,7 @@ export default function ItemMaster() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("admin_token");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       await axios.post(`${apiUrl}/api/services/admin/items`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -55,7 +57,7 @@ export default function ItemMaster() {
     if (result.isConfirmed) {
       try {
         const token = localStorage.getItem("admin_token");
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiUrl = API_BASE_URL;
         await axios.delete(`${apiUrl}/api/services/admin/items/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });

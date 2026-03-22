@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
 import { useSession } from "next-auth/react";
 
 export default function CartPage() {
@@ -47,7 +48,7 @@ export default function CartPage() {
 
   const fetchServices = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.get(`${apiUrl}/api/services`);
       setServices(res.data);
     } catch (err) {
@@ -63,7 +64,7 @@ export default function CartPage() {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.get(`${apiUrl}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -96,7 +97,7 @@ export default function CartPage() {
 
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       await axios.post(`${apiUrl}/api/orders`, {
         userEmail: user.email,
         items: cart,

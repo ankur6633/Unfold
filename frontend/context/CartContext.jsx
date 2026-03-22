@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
+import Swal from "sweetalert2";
 
 const CartContext = createContext();
 
@@ -29,7 +31,7 @@ export function CartProvider({ children }) {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiUrl = API_BASE_URL;
         const res = await axios.get(`${apiUrl}/api/auth/cart`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -68,7 +70,7 @@ export function CartProvider({ children }) {
     if (!token) return;
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       await axios.post(`${apiUrl}/api/auth/cart`, { cart: cartItems }, {
         headers: { Authorization: `Bearer ${token}` }
       });

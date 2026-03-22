@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer"; // Assuming Footer exists or I'll create one if missing
 
@@ -19,7 +20,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const apiUrl = API_BASE_URL;
 
   useEffect(() => {
     let interval;

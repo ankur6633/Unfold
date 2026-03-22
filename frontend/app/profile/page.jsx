@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Header from "@/components/Header";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
@@ -46,7 +47,7 @@ export default function ProfilePage() {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.get(`${apiUrl}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -66,7 +67,7 @@ export default function ProfilePage() {
     
     const token = localStorage.getItem("token");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       await axios.put(`${apiUrl}/api/auth/profile`, {
         fullName: profile.fullName,
         mobile: profile.mobile,
@@ -90,7 +91,7 @@ export default function ProfilePage() {
     
     const token = localStorage.getItem("token");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.post(`${apiUrl}/api/auth/profile/address`, newAddress, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -116,7 +117,7 @@ export default function ProfilePage() {
     
     const token = localStorage.getItem("token");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.delete(`${apiUrl}/api/auth/profile/address/${addressId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -132,7 +133,7 @@ export default function ProfilePage() {
   const handleSetDefault = async (addressId) => {
     const token = localStorage.getItem("token");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = API_BASE_URL;
       const res = await axios.patch(`${apiUrl}/api/auth/profile/address/${addressId}/default`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });

@@ -6,6 +6,7 @@ import HomeSection from "@/components/HomeSection";
 import AboutSection from "@/components/AboutSection";
 import axios from "axios";
 import Link from "next/link";
+import { API_BASE_URL } from "@/services/api";
 
 export default function Home() {
   const [services, setServices] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     async function load() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiUrl = API_BASE_URL;
         const res = await axios.get(`${apiUrl}/api/services`);
         setServices(res.data);
       } catch (err) {

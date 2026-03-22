@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/services/api";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -15,7 +17,7 @@ export default function PricingPage() {
   useEffect(() => {
     async function fetchServices() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiUrl = API_BASE_URL;
         const res = await axios.get(`${apiUrl}/api/services`);
         setServices(res.data);
         
