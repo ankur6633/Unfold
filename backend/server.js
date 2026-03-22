@@ -36,7 +36,7 @@ app.use('/api/admin', adminRoutes);
 
 // Test route
 app.get('/', (_req, res) => {
-  res.json({ message: 'Laundry Management System API' });
+  res.send('🚀 Server is running');
 });
 
 // Error handling middleware
@@ -59,6 +59,7 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log("✅ Server boot sequence completed");
 });
 
 async function initializeServices() {
