@@ -7,6 +7,7 @@ import { getAdminToken } from "@/lib/auth";
 
 const STATUSES = ["Booked", "Pickup", "Washing", "Washed", "Delivered", "Rejected"];
 
+
 export default function ManagePage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,11 +73,10 @@ export default function ManagePage() {
               return (
                 <div
                   key={order._id}
-                  className={`rounded-xl border p-5 shadow-sm transition-all ${
-                    isRejected 
-                      ? "border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/10" 
+                  className={`rounded-xl border p-5 shadow-sm transition-all ${isRejected
+                      ? "border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/10"
                       : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
-                  }`}
+                    }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="text-sm">
@@ -91,10 +91,10 @@ export default function ManagePage() {
                           </span>
                         )}
                       </div>
-                    <div className="mt-1 text-zinc-600 dark:text-zinc-400">
-                      Customer: <span className="font-medium text-zinc-900 dark:text-zinc-100">{order.userEmail}</span>
+                      <div className="mt-1 text-zinc-600 dark:text-zinc-400">
+                        Customer: <span className="font-medium text-zinc-900 dark:text-zinc-100">{order.userEmail}</span>
+                      </div>
                     </div>
-                  </div>
 
                     <div className="flex items-center gap-3">
                       <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -104,11 +104,10 @@ export default function ManagePage() {
                         value={order.status || "Pending"}
                         onChange={(e) => handleStatusChange(order._id, e.target.value)}
                         disabled={updatingOrderId === order._id}
-                        className={`h-10 rounded-lg border px-3 text-sm focus:ring-2 transition-all ${
-                          isRejected 
-                            ? "border-red-300 bg-white text-red-600 focus:ring-red-500" 
+                        className={`h-10 rounded-lg border px-3 text-sm focus:ring-2 transition-all ${isRejected
+                            ? "border-red-300 bg-white text-red-600 focus:ring-red-500"
                             : "border-zinc-200 bg-white focus:ring-blue-500 dark:border-zinc-800 dark:bg-zinc-900"
-                        }`}
+                          }`}
                       >
                         {STATUSES.map((s) => (
                           <option key={s} value={s}>
@@ -119,20 +118,20 @@ export default function ManagePage() {
                     </div>
                   </div>
 
-                <div className="mt-3 text-sm text-zinc-700 dark:text-zinc-200">
-                  <div className="font-semibold">Items</div>
-                  <ul className="mt-2 list-disc pl-5">
-                    {(order.items || []).map((item, idx) => (
-                      <li key={`${item.productId || idx}-${idx}`}>
-                        {item.name} x {item.quantity} - ${item.price}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-2 font-semibold">Total: ${order.totalPrice}</div>
+                  <div className="mt-3 text-sm text-zinc-700 dark:text-zinc-200">
+                    <div className="font-semibold">Items</div>
+                    <ul className="mt-2 list-disc pl-5">
+                      {(order.items || []).map((item, idx) => (
+                        <li key={`${item.productId || idx}-${idx}`}>
+                          {item.name} x {item.quantity} - ${item.price}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-2 font-semibold">Total: ${order.totalPrice}</div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
         )}
       </div>

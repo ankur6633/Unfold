@@ -4,16 +4,16 @@ export async function connectDB() {
   const { MONGO_URI } = process.env;
 
   if (!MONGO_URI) {
-    console.error('MONGO_URI is missing in environment variables.');
-    process.exit(1);
+    console.error('❌ MONGO_URI is missing in environment variables.');
+    return; // Don't exit
   }
 
   try {
     await mongoose.connect(MONGO_URI);
-    console.log('MongoDB connected');
+    // Success is logged in server.js .then()
   } catch (err) {
-    console.error('MongoDB connection failed:', err?.message || err);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', err?.message || err);
+    throw err; // Re-throw to be caught in server.js .catch()
   }
 }
 

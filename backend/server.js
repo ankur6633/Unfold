@@ -6,7 +6,23 @@ import serviceRoutes from './routes/serviceRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
+console.log("🚀 Starting server...");
+console.log("ENV PORT:", process.env.PORT);
+
+process.on("uncaughtException", (err) => {
+  console.error("❌ Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("❌ Unhandled Rejection:", err);
+});
+
 const app = express();
+
+// Health check route
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 // Middleware
 app.use(express.json());
@@ -41,18 +57,25 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-async function startServer() {
-  // Configure Cloudinary (module-side config).
-  await import('./config/cloudinary.js');
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
-  // Connect MongoDB.
-  const { connectDB } = await import('./config/db.js');
-  await connectDB();
+async function initializeServices() {
+  try {
+    // Configure Cloudinary (module-side config).
+    await import('./config/cloudinary.js');
 
-  app.listen(PORT, () => {
-    console.log(`Backend listening on port ${PORT}`);
-  });
+    // Connect MongoDB (non-blocking).
+    const { connectDB } = await import('./config/db.js');
+    connectDB()
+      .then(() => console.log("✅ DB connected"))
+      .catch((err) => console.error("❌ DB connection failed:", err));
+
+  } catch (err) {
+    console.error("❌ Service initialization failed:", err);
+  }
 }
 
-startServer();
+initializeServices();
 
